@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.liveperson.android:messaging_ui-3.5.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/messaging_ui-3.5.0.aar/ef653de1c65b996fc7d1087c7c6301b2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/messaging_ui-3.5.0.aar/ef653de1c65b996fc7d1087c7c6301b2/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

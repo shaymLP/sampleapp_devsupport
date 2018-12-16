@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.liveperson.sample.app">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Vibrate on new incoming msg -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!--Required for Audio Messaging-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!--Required for Audio Messaging and Image Sharing-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- [START gcm_permission] -->
+    <!-- <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" /> -->
+    <!-- <uses-permission android:name="android.permission.WAKE_LOCK" /> -->
+    <!-- [END gcm_permission] -->
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/lp_backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".IntroActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MessagingActivity"
+            android:launchMode="singleTop"
+            android:label="@string/messaging_title">
+        </activity>
+        <activity
+            android:name=".MonitoringActivity"
+            android:label="@string/monitoring_title"/>
+        <activity
+            android:name=".FragmentContainerActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".DeepLinkActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="liveperson.com"
+                    android:pathPrefix="/deeplink"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+
+        <!-- FCM -->
+        <!-- This service is used to receive any incoming message -->
+        <service android:name=".push.fcm.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- This service is used to receive and register the token when it is refreshed -->
+        <service android:name=".push.fcm.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".push.fcm.FirebaseRegistrationIntentService"
+            android:exported="false">
+
+        </service>
+
+        <receiver android:name=".notification.NotificationUI$BadgeBroadcastReceiver">
+            <intent-filter>
+                <action android:name="ACTION_LP_UPDATE_NUM_UNREAD_MESSAGES_ACTION" />
+            </intent-filter>
+        </receiver>
+        <!-- End of FCM -->
+
+
+        <!--
+        &lt;!&ndash; [START gcm_receiver] &ndash;&gt;
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="gcm.play.android.samples.com.gcmquickstart" />
+            </intent-filter>
+        </receiver>
+        &lt;!&ndash; [END gcm_receiver] &ndash;&gt;
+
+         &lt;!&ndash;[START gcm_listener] &ndash;&gt;
+        <service
+            android:name="com.liveperson.sample.app.push.gcm.MyGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        &lt;!&ndash; [END gcm_listener] &ndash;&gt;
+        &lt;!&ndash; [START instanceId_listener] &ndash;&gt;
+        <service
+            android:name="com.liveperson.sample.app.push.gcm.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        &lt;!&ndash; [END instanceId_listener] &ndash;&gt;
+        <service
+            android:name="com.liveperson.sample.app.push.gcm.RegistrationIntentService"
+            android:exported="false"></service>
+        -->
+
+    </application>
+
+</manifest>
