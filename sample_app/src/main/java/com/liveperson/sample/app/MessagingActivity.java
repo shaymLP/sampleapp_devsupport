@@ -54,29 +54,21 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
 
     private static final String TAG = MessagingActivity.class.getSimpleName();
 
-	public static final String CAMPAIGN_ID_KEY = "campaignId";
-	public static final String ENGAGEMENT_ID_KEY = "engagementId";
-	public static final String SESSION_ID_KEY = "sessionId";
-	public static final String VISITOR_ID_KEY = "visitorId";
-	public static final String ENGAGEMENT_CONTEXT_ID_KEY = "engagementContextId";
+    public static final String CAMPAIGN_ID_KEY = "campaignId";
+    public static final String ENGAGEMENT_ID_KEY = "engagementId";
+    public static final String SESSION_ID_KEY = "sessionId";
+    public static final String VISITOR_ID_KEY = "visitorId";
+    public static final String ENGAGEMENT_CONTEXT_ID_KEY = "engagementContextId";
 
-	private Switch mAuthenticationSwitch;
+    private Switch mAuthenticationSwitch;
 
-	private EditText mFirstNameView;
+    private EditText mFirstNameView;
     private EditText mLastNameView;
     private EditText mPhoneNumberView;
     private EditText mAuthCodeView;
     private EditText mPublicKey;
     private EditText mJWTView;
-
     private Button mOpenConversationButton;
-
-    private TextView mTime;
-    private TextView mDate;
-
-    private CheckBox mCallbackToastCheckBox;
-    private CheckBox mReadOnlyModeCheckBox;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +175,7 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
                 SampleAppStorage.getInstance(MessagingActivity.this).setSDKMode(SampleAppStorage.SDKMode.FRAGMENT);
                 saveAccountAndUserSettings();
                 removeNotification();
-                MainApplication.getInstance().setShowToastOnCallback(mCallbackToastCheckBox.isChecked());
+                MainApplication.getInstance().setShowToastOnCallback(false);
                 openFragmentContainer();
             }
         });
@@ -205,7 +197,7 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
                 //we are not setting a call back here - we'll listen to callbacks with broadcast receiver
                 // in main application class.
                 //setCallBack();
-                MainApplication.getInstance().setShowToastOnCallback(mCallbackToastCheckBox.isChecked());
+//                MainApplication.getInstance().setShowToastOnCallback(mCallbackToastCheckBox.isChecked());
                 // you can't register pusher before initialization
                 SampleAppUtils.handleGCMRegistration(MessagingActivity.this);
                 runOnUiThread(new Runnable() {
@@ -235,7 +227,7 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
      */
     private void openFragmentContainer() {
 
-    	Intent in = new Intent(MessagingActivity.this, FragmentContainerActivity.class);
+        Intent in = new Intent(MessagingActivity.this, FragmentContainerActivity.class);
         in.putExtra(Infra.KEY_READ_ONLY, isReadOnly());
         startActivity(in);
     }
@@ -247,16 +239,30 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
 
         String authCode = SampleAppStorage.getInstance(MessagingActivity.this).getAuthCode();
         String publicKey = SampleAppStorage.getInstance(MessagingActivity.this).getPublicKey();
+        String jwt = SampleAppStorage.getInstance(MessagingActivity.this).getJWT();
+        LPAuthenticationParams authParams;
 
-        LPAuthenticationParams authParams = new LPAuthenticationParams();
-        authParams.setAuthKey(authCode);
-        authParams.addCertificatePinningKey(publicKey);
+        if (authCode.isEmpty() && jwt.isEmpty()) {
+            authParams = new LPAuthenticationParams(LPAuthenticationParams.LPAuthenticationType.SIGN_UP);
+        }
 
-		CampaignInfo campaignInfo = SampleAppUtils.getCampaignInfo(this);
-        ConversationViewParams params = getParams‎().setCampaignInfo(campaignInfo).setReadOnlyMode(isReadOnly());
-		LivePerson.showConversation(MessagingActivity.this, authParams, params);
+        else
+        {
+            authParams = new LPAuthenticationParams(LPAuthenticationParams.LPAuthenticationType.AUTH);
+            if (jwt.isEmpty()) {
+                authParams.setAuthKey(authCode);
+                authParams.addCertificatePinningKey(publicKey);
+            }
+            else {
+                authParams.setHostAppJWT(jwt);
+            }
+        }
 
-		ConsumerProfile consumerProfile = new ConsumerProfile.Builder()
+        CampaignInfo campaignInfo = SampleAppUtils.getCampaignInfo(this);
+        ConversationViewParams params = getParams‎().setCampaignInfo(campaignInfo).setReadOnlyMode(false);
+        LivePerson.showConversation(MessagingActivity.this, authParams, params);
+
+        ConsumerProfile consumerProfile = new ConsumerProfile.Builder()
                 .setFirstName(mFirstNameView.getText().toString())
                 .setLastName(mLastNameView.getText().toString())
                 .setPhoneNumber(mPhoneNumberView.getText().toString())
@@ -276,7 +282,7 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
     }
 
     private boolean isReadOnly() {
-        return mReadOnlyModeCheckBox.isChecked();
+        return false;
     }
 
     /**
@@ -399,14 +405,14 @@ public class MessagingActivity extends AppCompatActivity implements CompoundButt
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked){
-            mJWTView.setVisibility(View.VISIBLE);
-            mAuthCodeView.setVisibility(View.VISIBLE);
-            mPublicKey.setVisibility(View.VISIBLE);
+            findViewById(R.id.jwt_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.auth_code_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.public_key_layout).setVisibility(View.VISIBLE);
         }
         else {
-            mJWTView.setVisibility(View.GONE);
-            mAuthCodeView.setVisibility(View.GONE);
-            mPublicKey.setVisibility(View.GONE);
+            findViewById(R.id.jwt_layout).setVisibility(View.GONE);
+            findViewById(R.id.auth_code_layout).setVisibility(View.GONE);
+            findViewById(R.id.public_key_layout).setVisibility(View.GONE);
         }
 
     }
